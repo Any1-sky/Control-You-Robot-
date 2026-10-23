@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Control Your Robot!</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#402828;--deep:#320b0b;--key:#d9d9d9;--mute:#6e5656;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:#fff;font-family:Poppins,system-ui,sans-serif;overflow-x:hidden}
+#rain{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.drop{position:absolute;top:-60px;opacity:.28;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(360deg)}}
+main{position:relative;z-index:1;min-height:100vh;padding:24px 20px 40px;display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.title{background:var(--key);border:6px solid var(--deep);border-radius:0 0 28px 28px;padding:14px 26px 12px;position:absolute;top:0;left:24px;animation:drop .8s cubic-bezier(.3,1.6,.5,1) both}
+.title{padding:clamp(12px,2vh,22px) clamp(22px,3vw,44px) clamp(10px,1.6vh,18px);border-width:clamp(5px,.6vw,9px);border-radius:0 0 clamp(24px,3vw,40px) clamp(24px,3vw,40px)}
+.title h1{margin:0;font-size:clamp(30px,min(9vw,7vh),68px);line-height:.95;font-weight:800;color:var(--deep)}
+.title h1 span{color:#000;display:block}
+@keyframes drop{from{transform:translateY(-120%)}}
+.pad{--s:clamp(84px,min(28vw,20vh),190px);margin-top:calc(clamp(30px,min(9vw,7vh),68px)*2 + 70px);display:grid;grid-template-columns:repeat(3,var(--s));grid-template-rows:repeat(3,var(--s));gap:clamp(10px,1.4vw,20px);animation:pop .7s .2s both}
+@media (max-width:700px){main{justify-content:center}.pad{--s:min(29vw,22vh)}}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.k{background:var(--key);border:5px solid var(--deep);border-radius:24px;display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .12s,box-shadow .12s,background .12s;box-shadow:0 8px 0 var(--deep);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.k:hover{background:#fff}
+.k:active,.k.on{transform:translateY(7px);box-shadow:0 1px 0 var(--deep)}
+.k svg{width:46%;height:46%;fill:var(--deep)}
+.up{grid-area:1/2}.left{grid-area:2/1}.mid{grid-area:2/2}.right{grid-area:2/3}.down{grid-area:3/2}
+.mid svg{width:56%;height:56%}
+.mid.spin svg{animation:spin var(--spin,.6s) linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.conn{width:100%;margin-top:10px;background:#fff;color:var(--deep);border:4px solid #fff;border-radius:999px;padding:14px 20px;font:800 17px Poppins,system-ui,sans-serif;cursor:pointer;transition:transform .15s,background .15s}
+.conn:hover{transform:scale(1.04)}
+.conn:active{transform:scale(.97)}
+.conn.live{background:transparent;color:#fff}
+.chip{position:fixed;left:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:2;background:var(--deep);border:3px solid var(--deep);border-radius:999px;padding:8px 18px;font-size:13px;font-weight:600;max-width:calc(100vw - 40px)}
+.chip.ok{border-color:#7ee787}
+.chip.ok::before{content:'● ';color:#7ee787;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.3}}
+/* drawer */
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(88vw,420px);background:var(--deep);border-radius:36px 0 0 36px;border:4px solid #fff;border-right:0;z-index:5;padding:34px 34px 0 44px;transform:translateX(100%);transition:transform .5s cubic-bezier(.3,1.2,.5,1);padding-top:calc(34px + env(safe-area-inset-top,0px))}
+.drawer.open{transform:none}
+.tab{position:absolute;left:-46px;top:38%;width:46px;height:120px;background:var(--deep);border:4px solid #fff;border-right:0;border-radius:30px 0 0 30px;cursor:pointer;color:#fff;font-size:22px;font-family:inherit;padding:0}
+.tab span{display:inline-block;transition:transform .4s}
+.drawer.open .tab span{transform:rotate(180deg)}
+.drawer h2{margin:0 0 6px;font-size:34px;font-weight:800}
+.drawer h2+input{margin-bottom:46px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:18px;border-radius:9px;background:#fff;outline:none;margin:10px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:40px;border-radius:50%;background:var(--mute);border:4px solid #fff;cursor:grab}
+input[type=range]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;background:var(--mute);border:4px solid #fff;cursor:grab}
+.val{font-size:14px;opacity:.7;font-weight:600}
+</style>
+</head>
+<body>
+<div id="rain"></div>
+<main>
+  <div class="title"><h1><span>Control</span>Your Robot!</h1></div>
+  <div class="pad" role="group" aria-label="D-pad">
+    <button class="k up" data-d="up" aria-label="Atas"><svg viewBox="0 0 24 24"><path d="M12 3 2 13l0 7 10-10 10 10 0-7z"/></svg></button>
+    <button class="k left" data-d="left" aria-label="Kiri"><svg viewBox="0 0 24 24"><path d="M3 12 13 2l7 0L10 12l10 10-7 0z"/></svg></button>
+    <button class="k mid" id="mid" aria-label="Putar logo"><svg viewBox="0 0 24 24"><path d="M2 12 20 2l-1 20z"/></svg></button>
+    <button class="k right" data-d="right" aria-label="Kanan"><svg viewBox="0 0 24 24"><path d="M21 12 11 2 4 2l10 10L4 22l7 0z"/></svg></button>
+    <button class="k down" data-d="down" aria-label="Bawah"><svg viewBox="0 0 24 24"><path d="M12 21 2 11l0-7 10 10L22 4l0 7z"/></svg></button>
+  </div>
+  <div class="chip" id="chip">micro:bit belum terhubung</div>
+</main>
+<aside class="drawer" id="drawer">
+  <button class="tab" id="tab" aria-label="Pengaturan"><span>‹</span></button>
+  <h2>Speed!</h2>
+  <input type="range" id="speed" min="1" max="10" value="3">
+  <div class="val" id="sv"></div>
+  <h2 style="margin-top:40px">Acceleration?</h2>
+  <input type="range" id="acc" min="1" max="10" value="7">
+  <div class="val" id="av"></div>
+  <h2 style="margin-top:40px">micro:bit</h2>
+  <button class="conn" id="conn">Connect micro:bit</button>
+  <button class="conn" id="usb">Connect via USB</button>
+</aside>
+<script>
+const $=id=>document.getElementById(id);
+const mid=$('mid'),speed=$('speed'),acc=$('acc'),chip=$('chip'),btn=$('conn');
+// falling emoji
+const em=['🤖','⚙️','🔧','⚡','🔩','🦾','🛰️','✨'],rain=$('rain');
+function drop(){const e=document.createElement('div');e.className='drop';e.textContent=em[Math.random()*em.length|0];
+e.style.left=Math.random()*100+'vw';e.style.fontSize=(18+Math.random()*30)+'px';
+const d=5+Math.random()*7;e.style.animationDuration=d+'s';rain.appendChild(e);setTimeout(()=>e.remove(),d*1000)}
+setInterval(drop,350);for(let i=0;i<10;i++)setTimeout(drop,i*120);
+// settings
+function upd(){$('sv').textContent='Level '+speed.value;$('av').textContent='Level '+acc.value}
+speed.oninput=()=>{upd();send('speed:'+speed.value)};
+acc.oninput=()=>{upd();send('acc:'+acc.value)};upd();
+$('tab').onclick=()=>$('drawer').classList.toggle('open');
+// movement
+let timer=null;
+function move(d){send(d)}
+// micro:bit via Web Bluetooth (UART service)
+const UART='6e400001-b5a3-f393-a0a9-e50e24dcca9e',RX='6e400002-b5a3-f393-a0a9-e50e24dcca9e';
+let dev=null,chr=null,q=Promise.resolve();
+function setChip(t,ok){chip.textContent=t;chip.classList.toggle('ok',!!ok)}
+function send(s){const d=new TextEncoder().encode(s+'\n');
+if(wr){wr.write(d).catch(()=>{});return}
+if(!chr)return;
+q=q.then(()=>chr.properties.writeWithoutResponse?chr.writeValueWithoutResponse(d):chr.writeValue(d)).catch(()=>{})}
+btn.onclick=async()=>{
+if(dev&&dev.gatt.connected){dev.gatt.disconnect();return}
+if(!navigator.bluetooth){setChip('Browser tidak mendukung Bluetooth. Pakai Chrome atau Edge.');return}
+try{setChip('Mencari micro:bit...');
+dev=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:[UART]});
+dev.addEventListener('gattserverdisconnected',()=>{chr=null;btn.textContent='Connect micro:bit';btn.classList.remove('live');setChip('micro:bit terputus')});
+const srv=await dev.gatt.connect(),svc=await srv.getPrimaryService(UART);
+chr=await svc.getCharacteristic(RX);
+btn.textContent='Putuskan';btn.classList.add('live');setChip('Terhubung: '+dev.name,true);
+send('speed:'+speed.value);send('acc:'+acc.value)
+}catch(e){setChip(errMsg(e))}};
+function errMsg(e){const m=(e&&e.message)||String(e);
+if(/policy|SecurityError|disallowed/i.test(m+(e&&e.name)))return 'Diblokir viewer. Buka link artifact di tab baru browser (Chrome/Edge).';
+if(e&&e.name==='NotFoundError')return 'Tidak ada perangkat dipilih / micro:bit tidak ketemu.';
+if(/UART|service/i.test(m))return 'Service UART tidak ada. Tambahkan Bluetooth UART di MakeCode.';
+return 'Gagal: '+m}
+// micro:bit via USB (Web Serial)
+let wr=null,port=null;
+$('usb').onclick=async()=>{
+if(wr){try{wr.releaseLock();await port.close()}catch(e){}wr=null;$('usb').textContent='Connect via USB';setChip('USB terputus');return}
+if(!navigator.serial){setChip('Browser tidak mendukung USB Serial. Pakai Chrome/Edge di laptop.');return}
+try{port=await navigator.serial.requestPort({filters:[{usbVendorId:0x0d28}]});await port.open({baudRate:115200});
+wr=port.writable.getWriter();$('usb').textContent='Putuskan USB';setChip('Terhubung via USB',true);
+send('speed:'+speed.value);send('acc:'+acc.value)}catch(e){setChip(errMsg(e))}};
+if(window.top!==window.self)setChip('Tip: kalau Connect gagal, buka link artifact di tab baru');
+document.querySelectorAll('[data-d]').forEach(b=>{
+const d=b.dataset.d;
+const start=e=>{e.preventDefault();b.classList.add('on');move(d);clearInterval(timer);timer=setInterval(()=>move(d),160)};
+const stop=()=>{b.classList.remove('on');clearInterval(timer)};
+b.addEventListener('pointerdown',start);['pointerup','pointerleave','pointercancel'].forEach(t=>b.addEventListener(t,stop));
+});
+// center spin
+let st;
+mid.addEventListener('click',()=>{
+mid.style.setProperty('--spin',(0.9-speed.value*0.07)+'s');
+mid.classList.add('spin');send('spin');
+clearTimeout(st);st=setTimeout(()=>mid.classList.remove('spin'),2200)});
+// keyboard
+const km={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
+addEventListener('keydown',e=>{if(km[e.key]){e.preventDefault();move(km[e.key]);document.querySelector('[data-d='+km[e.key]+']').classList.add('on')}else if(e.key===' '){e.preventDefault();mid.click()}});
+addEventListener('keyup',e=>{if(km[e.key])document.querySelector('[data-d='+km[e.key]+']').classList.remove('on')});
+</script>
+</body>
+</html>
