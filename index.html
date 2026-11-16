@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Control Your Robot!</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="rain"></div>
+<div class="title"><h1><span>Control</span>Your Robot!</h1></div>
+<main>
+  <section id="login" class="top" hidden>
+    <form class="card" id="form" autocomplete="on">
+      <h2>Login</h2><p>Masuk dulu untuk kontrol robot</p>
+      <label for="u">Username</label><input id="u" placeholder="Masukkan username" required autocomplete="username">
+      <label for="p">Password</label><input id="p" type="password" placeholder="Masukkan password" required autocomplete="current-password">
+      <div class="err" id="err"></div>
+      <button class="btn" type="submit">Login</button>
+    </form>
+  </section>
+
+  <section id="dash" class="top" hidden>
+    <button class="out" id="out">Logout</button>
+    <div class="pad" role="group" aria-label="D-pad">
+      <button class="k up" id="btnForward" data-c="UP" aria-label="Maju"><svg viewBox="0 0 24 24"><path d="M12 3 2 13l0 7 10-10 10 10 0-7z"/></svg></button>
+      <button class="k left" id="btnLeft" data-c="LEFT" aria-label="Kiri"><svg viewBox="0 0 24 24"><path d="M3 12 13 2l7 0L10 12l10 10-7 0z"/></svg></button>
+      <button class="k mid" id="mid" aria-label="Putar logo"><svg viewBox="0 0 24 24"><path d="M2 12 20 2l-1 20z"/></svg></button>
+      <button class="k right" id="btnRight" data-c="RIGHT" aria-label="Kanan"><svg viewBox="0 0 24 24"><path d="M21 12 11 2 4 2l10 10L4 22l7 0z"/></svg></button>
+      <button class="k down" id="btnBackward" data-c="DOWN" aria-label="Mundur"><svg viewBox="0 0 24 24"><path d="M12 21 2 11l0-7 10 10L22 4l0 7z"/></svg></button>
+    </div>
+    <div class="acts">
+      <button class="k stop" id="btnStop" data-c="STOP">STOP</button>
+      <button class="k" id="btnGrip" data-c="GRIP">✊ Grip</button>
+      <button class="k" id="btnRelease" data-c="Release">🖐️ Release</button>
+      <div class="hint">Keyboard: W A S D / panah = gerak, Spasi atau X = stop, G = grip, O atau R = release. Geser tab di kanan untuk Speed dan koneksi.</div>
+    </div>
+
+    <div class="chip" id="chip">Robot belum terhubung</div>
+    <aside class="drawer" id="drawer">
+      <button class="tab" id="tab" aria-label="Pengaturan"><span>‹</span></button>
+      <h2>Speed!</h2>
+      <input type="range" id="speed" min="1" max="10" value="3"><div class="val" id="sv"></div>
+      <h2 style="margin-top:34px">Acceleration?</h2>
+      <input type="range" id="acc" min="1" max="10" value="7"><div class="val" id="av"></div>
+      <h2 style="margin-top:34px">Robot</h2>
+      <button class="conn" id="conn">Hubungkan Bluetooth</button>
+      <button class="conn" id="usb">Hubungkan via USB</button>
+    </aside>
+  </section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
